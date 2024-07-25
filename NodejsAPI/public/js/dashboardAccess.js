@@ -2,9 +2,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dashboardSelect = document.getElementById("dashboard");
     try {
         const response = await fetch("/api/dashboard-pages");
-        const data = await response.json();
+        const data = response.json();
         
-        if (data && data.data && Array.isArray(data.data)) {
+        if (Array.isArray(data.data)) {
             dashboardSelect.innerHTML = data.data.map(dashboard => 
                 `<option value="${dashboard.dashboard_page_id}">${dashboard.name}</option>`
             ).join("");

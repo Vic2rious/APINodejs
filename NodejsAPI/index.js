@@ -5,7 +5,7 @@ const axios = require("axios");
 
 const app = express();
 const port = 5500;
-const apiKeyValue = "tEmZCKJcyeXytBLt7qqkp57Ahf84L6KASpL9Q99b";
+const apiKeyValue = "EpMTRhMVkgwk2EldA3QbSUIH3mrTBhvZvXhfd6pe";
 
 // Middleware to parse URL-encoded bodies (for POST requests)
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -81,6 +81,20 @@ app.get("/api/boards", async (req, res) => {
     }
 });
 
+// Endpoint to fetch workflows based on board_id
+app.get("/api/boards/:boardId/workflows", async (req, res) => {
+    const boardId = req.params.boardId;
+    try {
+        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/workflows`, {
+            headers: {
+                "apikey": apiKeyValue
+            }
+        });
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
+    }
+});
 
 // Handle GET requests
 app.get("/get", (req, res) => {
