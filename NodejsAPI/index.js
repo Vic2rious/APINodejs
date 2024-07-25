@@ -96,24 +96,37 @@ app.get("/api/boards/:boardId/workflows", async (req, res) => {
     }
 });
 
+// Endpoint to fetch columns based on board_id
+app.get("/api/boards/:boardId/columns", async (req, res) => {
+    const boardId = req.params.boardId;
+    try {
+        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/columns`, {
+            headers: {
+                "apikey": apiKeyValue
+            }
+        });
+        res.json(response.data);
+    } catch (error) {
+        console.error(`Failed to fetch columns for board ${boardId}`, error.response ? error.response.data : error.message);
+        res.status(500).json({ error: "Failed to fetch data from the API" });
+    }
+});
+
+
 // Handle GET requests
 app.get("/get", (req, res) => {
+    
+    const Workflow = req.query.Workflow;
+    const Column = req.query.Column;
+
     const Title = req.query.Title;
     const Description = req.query.Description;
-    const Status = req.query.Status;
     const postData = {
-        "card_id": 82,
-        "custom_id": null,
-        "board_id": 4,
-        "workflow_id": 7,
+
         "title": Title,
-        "description" : Description,
-        "owner_user_id": 2,
-        "type_id": null,
-        "color": "ef24f2",
-        "section": 2,
-        "column_id": Status,
-        "lane_id": 6,
+        "description": Description,
+        "column_id": parseInt(Column, 10),
+        "lane_id": parseInt(Workflow, 10),
         "position": 0
     };
 
@@ -145,6 +158,7 @@ app.get("/get", (req, res) => {
         `);
     })
     .catch(error => {
+        console.log(Column + "asdf");
         console.error("Error posting data:", error);
         res.status(500).send("Error posting data");
     });
