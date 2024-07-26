@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const workflowSelect = document.getElementById("workflow");
     const columnSelect = document.getElementById("column");
 
+    columnSelect.disabled = true;
+
     workflowSelect.addEventListener("change", async () => {
         const workflowId = workflowSelect.value;
         console.log(workflowId);
@@ -22,9 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data && data.data && Array.isArray(data.data)) {
                     const filteredColumns = data.data.filter(column => column.workflow_id === parseInt(workflowId, 10));
                     if (filteredColumns.length > 0) {
-                        columnSelect.innerHTML = filteredColumns.map(column =>
+                        columnSelect.innerHTML += filteredColumns.map(column =>
                             `<option value="${column.column_id}">${column.name}</option>`
                         ).join("");
+
+                        columnSelect.disabled = false;
                     } else {
                         columnSelect.innerHTML = "<option value=\"\">No columns available(1)</option>";
                     }

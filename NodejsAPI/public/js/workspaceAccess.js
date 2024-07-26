@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const dashboardSelect = document.getElementById("dashboard");
     const workspaceSelect = document.getElementById("workspace");
 
+    workspaceSelect.disabled = true;
+
     dashboardSelect.addEventListener("change", async () => {
         const dashboardId = dashboardSelect.value;
         if (!dashboardId) {
@@ -25,11 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Wait for all workspace details to be fetched
                 const workspacesData = await Promise.all(workspacePromises);
                 
-
                 // Build options for the workspace select element
-                workspaceSelect.innerHTML = workspacesData.map((workspaceData, index) => 
+                workspaceSelect.innerHTML += workspacesData.map((workspaceData, index) => 
                     `<option value="${workspaceIds[index]}">${workspaceData.data.name}</option>`
                 ).join("");
+
+                workspaceSelect.disabled = false;
             } else {
                 workspaceSelect.innerHTML = "<option value=\"\">No workspaces available</option>";
             }

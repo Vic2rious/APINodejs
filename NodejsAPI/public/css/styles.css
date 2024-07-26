@@ -1,13 +1,27 @@
+/* Ensure that the body has a smooth background transition */
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #77a1d3, #79cbca, #e684ae);
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(270deg, #77a1d3, #79cbca, #e684ae);
+    background-size: 600% 600%;
+    animation: gradientBackground 20s ease infinite;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     margin: 0;
+}
+
+@keyframes gradientBackground {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 h1 {
@@ -41,11 +55,29 @@ h2 {
     background-color: #3c6382;
 }
 
+/* Apply a fixed width and height to the form and smooth transitions */
 form {
     background-color: rgba(255, 255, 255, 0.8);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    max-width: 800px;
+    /*transition: all 0.3s ease;*/
+}
+
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.form-section {
+    flex: 1;
+    margin: 0 20px;
 }
 
 label {
@@ -54,12 +86,19 @@ label {
     font-weight: bold;
 }
 
-input[type="text"], select {
+input[type="text"], select, textarea {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    resize: none; /* Allow the user to resize the textarea vertically */
+}
+
+textarea {
+    height: auto; /* Let the textarea expand based on the content */
 }
 
 .response-container {

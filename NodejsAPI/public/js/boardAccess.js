@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const workspaceSelect = document.getElementById("workspace");
     const boardSelect = document.getElementById("board");
 
+    boardSelect.disabled = true;
+
     // Fetch all boards once and store them
     let allBoards = [];
 
@@ -34,9 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const filteredBoards = allBoards.filter(board => board.workspace_id === parseInt(workspaceId, 10));
 
         // Build options for the board select element
-        boardSelect.innerHTML = filteredBoards.map(board => 
+        boardSelect.innerHTML += filteredBoards.map(board => 
             `<option value="${board.board_id}">${board.name}</option>`
         ).join("");
+        
+        boardSelect.disabled = false;
     }
 
     // Fetch boards when the script is loaded

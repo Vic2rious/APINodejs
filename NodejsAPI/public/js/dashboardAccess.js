@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const data = await response.json(); // await???
         
         if (Array.isArray(data.data)) {
-            dashboardSelect.innerHTML = data.data.map(dashboard => 
+            dashboardSelect.innerHTML += data.data.map(dashboard => 
                 `<option value="${dashboard.dashboard_page_id}">${dashboard.name}</option>`
             ).join("");
         } else {
