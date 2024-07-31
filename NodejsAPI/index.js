@@ -2,6 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const axios = require("axios");
+const https = require("https");
+const fs = require("fs");
 
 const app = express();
 const port = 5500;
@@ -10,6 +12,12 @@ const apiKeyValue = "EpMTRhMVkgwk2EldA3QbSUIH3mrTBhvZvXhfd6pe";
 // Middleware to parse URL-encoded bodies (for POST requests)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+
+// Read the SSL certificate files
+const options = {
+    key: fs.readFileSync("key.pem"),
+    cert: fs.readFileSync("cert.pem")
+};
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
@@ -164,6 +172,7 @@ app.get("/get", (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+// Create HTTPS server
+https.createServer(options, app).listen(port, () => {
+    console.log("HTTPS Server running on https://localhost:" + port);
 });
