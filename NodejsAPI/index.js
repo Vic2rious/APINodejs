@@ -7,7 +7,7 @@ const fs = require("fs");
 
 const app = express();
 const port = 5500;
-const apiKeyValue = "EpMTRhMVkgwk2EldA3QbSUIH3mrTBhvZvXhfd6pe";
+const apiKeyValue = "blBKknnfhRx5nPghmv5orznIT9pwulvUGZmPDpiv";
 
 // Middleware to parse URL-encoded bodies (for POST requests)
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -120,11 +120,28 @@ app.get("/api/boards/:boardId/columns", async (req, res) => {
     }
 });
 
+// Endpoint to fetch swimlanes based on board_id
+app.get("/api/boards/:boardId/lanes", async (req, res) => {
+    const boardId = req.params.boardId;
+    try {
+        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/lanes`, {
+            headers: {
+                "apikey": apiKeyValue // Replace with your actual API token
+            }
+        });
+        res.json(response.data);
+    } catch (error) {
+        console.error(`Failed to fetch swimlanes for board ${boardId}`, error.response ? error.response.data : error.message);
+        res.status(500).json({ error: "Failed to fetch data from the API" });
+    }
+});
+
 
 // Handle GET requests
 app.get("/get", (req, res) => {
     
     const Workflow = req.query.Workflow;
+    const Swimlane = req.query.Swimlane;
     const Column = req.query.Column;
 
     const Title = req.query.Title;
@@ -133,8 +150,9 @@ app.get("/get", (req, res) => {
 
         "title": Title,
         "description": Description,
+        "workflow_id": parseInt(Workflow, 10),
         "column_id": parseInt(Column, 10),
-        "lane_id": parseInt(Workflow, 10),
+        "lane_id": parseInt(Swimlane, 10),
         "position": 0
     };
 

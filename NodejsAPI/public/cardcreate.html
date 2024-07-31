@@ -40,6 +40,12 @@
                 </select>
                 <br><br>
 
+                <label for="swimlane">Swimlane:</label>
+                <select id="swimlane" name="Swimlane" required>
+                    <option value="">Select swimlane...</option>
+                </select>
+                <br><br>
+
                 <label for="column">Column:</label>
                 <select id="column" name="Column" required>
                     <option value="">Select column...</option>
@@ -54,7 +60,7 @@
                 <br><br>
 
                 <label for="getDescription">Description:</label>
-                <textarea id="getDescription" name="Description" required></textarea>
+                <textarea id="getDescription" name="Description"></textarea>
                 <br><br>
 
                 <input type="submit" value="Submit">
@@ -68,6 +74,7 @@
     <script src="js/boardAccess.js"></script>
     <script src="js/workflowAccess.js"></script>
     <script src="/js/columnAccess.js"></script>
+    <script src="/js/swimlaneAccess.js"></script>
 
 </body>
 </html>

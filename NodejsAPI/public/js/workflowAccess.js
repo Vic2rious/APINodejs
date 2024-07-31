@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (data && data.data && Array.isArray(data.data)) {
                 // Build options for the workflow select element
+                workflowSelect.innerHTML = "<option value=\"\">Select workflow...</option>";
                 workflowSelect.innerHTML += data.data.map(workflow => 
                     `<option value="${workflow.workflow_id}">${workflow.name}</option>`
                 ).join("");

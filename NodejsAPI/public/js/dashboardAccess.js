@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dashboardSelect = document.getElementById("dashboard");
     try {
         const response = await fetch("/api/dashboard-pages");
-        const data = await response.json(); // await???
+        const data = await response.json();
         
         if (Array.isArray(data.data)) {
             dashboardSelect.innerHTML += data.data.map(dashboard => 

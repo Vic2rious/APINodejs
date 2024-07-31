@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const filteredBoards = allBoards.filter(board => board.workspace_id === parseInt(workspaceId, 10));
 
         // Build options for the board select element
+        boardSelect.innerHTML = "<option value=\"\">Select board...</option>";
         boardSelect.innerHTML += filteredBoards.map(board => 
             `<option value="${board.board_id}">${board.name}</option>`
         ).join("");

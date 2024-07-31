@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     workflowSelect.addEventListener("change", async () => {
         const workflowId = workflowSelect.value;
-        console.log(workflowId);
         const boardId = document.getElementById("board").value;
         
         if (!workflowId || !boardId) {
@@ -24,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data && data.data && Array.isArray(data.data)) {
                     const filteredColumns = data.data.filter(column => column.workflow_id === parseInt(workflowId, 10));
                     if (filteredColumns.length > 0) {
+                        columnSelect.innerHTML = "<option value=\"\">Select column...</option>";
                         columnSelect.innerHTML += filteredColumns.map(column =>
                             `<option value="${column.column_id}">${column.name}</option>`
                         ).join("");

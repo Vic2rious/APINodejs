@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const workspacesData = await Promise.all(workspacePromises);
                 
                 // Build options for the workspace select element
+                workspaceSelect.innerHTML = "<option value=\"\">Select workspace...</option>";  
                 workspaceSelect.innerHTML += workspacesData.map((workspaceData, index) => 
                     `<option value="${workspaceIds[index]}">${workspaceData.data.name}</option>`
                 ).join("");
