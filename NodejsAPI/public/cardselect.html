@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Cards</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/cardsAccess.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Select a Board</h1>
+        <div class="form-group">
+            <label for="board">Board:</label>
+            <select id="board">
+                <option value="">Select a board</option>
+            </select>
+        </div>
+        <br>
+        <button class="button" onclick="fetchCards()">View Cards</button>
+
+        <table id="cardsTable" class="styled-table">
+            <thead>
+                <tr>
+                    <th>Card ID</th>
+                    <th>Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Cards will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

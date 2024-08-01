@@ -5,6 +5,8 @@ const axios = require("axios");
 const https = require("https");
 const fs = require("fs");
 
+const routes = require("./routes");
+
 const app = express();
 const port = 5500;
 const apiKeyValue = "blBKknnfhRx5nPghmv5orznIT9pwulvUGZmPDpiv";
@@ -31,128 +33,30 @@ app.get("/", (req, res) => {
 app.get("/cardcreate", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "cardcreate.html"));
 });
-// Endpoint to fetch dashboard pages
-app.get("/api/dashboard-pages", async (req, res) => {
-    try {
-        const response = await axios.get("https://testfrog.kanbanize.com/api/v2/dashboardPages", {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-        //console.log(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
+
+// Route for the view cards page
+app.get("/cards", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "cardselect.html"));
 });
 
-// Endpoint to fetch workspaces based on dashboard_page_id
-app.get("/api/dashboard-pages/:dashboardId/workspaces", async (req, res) => {
-    const dashboardId = req.params.dashboardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/dashboardPages/${dashboardId}/workspaces`, {
-            headers: {
-                "apikey": apiKeyValue             }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
-});
-
-// Endpoint to fetch workspace details
-app.get("/api/workspaces/:workspaceId", async (req, res) => {
-    const workspaceId = req.params.workspaceId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/workspaces/${workspaceId}`, {
-            headers: {
-                "apikey": apiKeyValue 
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
-});
-
-// Endpoint to fetch all boards
-app.get("/api/boards", async (req, res) => {
-    try {
-        const response = await axios.get("https://testfrog.kanbanize.com/api/v2/boards", {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
-});
-
-// Endpoint to fetch workflows based on board_id
-app.get("/api/boards/:boardId/workflows", async (req, res) => {
-    const boardId = req.params.boardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/workflows`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
-});
-
-// Endpoint to fetch columns based on board_id
-app.get("/api/boards/:boardId/columns", async (req, res) => {
-    const boardId = req.params.boardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/columns`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        console.error(`Failed to fetch columns for board ${boardId}`, error.response ? error.response.data : error.message);
-        res.status(500).json({ error: "Failed to fetch data from the API" });
-    }
-});
-
-// Endpoint to fetch swimlanes based on board_id
-app.get("/api/boards/:boardId/lanes", async (req, res) => {
-    const boardId = req.params.boardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/lanes`, {
-            headers: {
-                "apikey": apiKeyValue // Replace with your actual API token
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        console.error(`Failed to fetch swimlanes for board ${boardId}`, error.response ? error.response.data : error.message);
-        res.status(500).json({ error: "Failed to fetch data from the API" });
-    }
-});
-
+// Use the routes defined in routes.js
+app.use(routes);
 
 // Handle GET requests
 app.get("/get", (req, res) => {
     
-    const Workflow = req.query.Workflow;
-    const Swimlane = req.query.Swimlane;
-    const Column = req.query.Column;
+    const {Workflow, Column, Swimlane, Title, Description, Colour } = req.query;
 
-    const Title = req.query.Title;
-    const Description = req.query.Description;
+    const FixedDescription = Description.replace(/\n/g,"<br>");
+    const FixedColour = Colour.replace("#","");
     const postData = {
 
         "title": Title,
-        "description": Description,
+        "description": FixedDescription,
         "workflow_id": parseInt(Workflow, 10),
         "column_id": parseInt(Column, 10),
         "lane_id": parseInt(Swimlane, 10),
+        "color": FixedColour,
         "position": 0
     };
 
