@@ -124,5 +124,20 @@ router.get("/api/boards/:boardId/cards", async (req, res) => {
     }
 });
 
+// Endpoint to delete cards based on cardID
+router.delete("/api/cards/:cardId/delete", async (req, res) => {
+    const cardId = req.params.cardId;
+    try {
+        const response = await axios.delete(`https://testfrog.kanbanize.com/api/v2/cards/${cardId}`, {
+            headers: {
+                "apikey": apiKeyValue
+            }
+        });
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to delete data from the card: " + cardId + error});
+    }
+});
+
 
 module.exports = router;
