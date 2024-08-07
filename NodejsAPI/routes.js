@@ -4,140 +4,92 @@ const axios = require("axios");
 const router = express.Router();
 const apiKeyValue = "blBKknnfhRx5nPghmv5orznIT9pwulvUGZmPDpiv";
 
-// Endpoint to fetch dashboard pages
-router.get("/api/dashboard-pages", async (req, res) => {
-    try {
-        const response = await axios.get("https://testfrog.kanbanize.com/api/v2/dashboardPages", {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
+// Function to create a new endpoint
+const createEndpoint = (method, url, axiosConfig) => {
+    router[method](url, async (req, res) => {
+        const params = req.params;
+        const query = req.query;
+        const data = req.body;
+        
+        try {
+            const axiosOptions = {
+                ...axiosConfig,
+                url: typeof axiosConfig.url === "function" ? axiosConfig.url(params, query) : axiosConfig.url,
+                headers: {
+                    "apikey": apiKeyValue,
+                    ...axiosConfig.headers
+                },
+                params: axiosConfig.params ? axiosConfig.params(params, query) : {},
+                data: axiosConfig.data ? axiosConfig.data(data, params, query) : {}
+            };
+            const response = await axios(axiosOptions);
+            res.json(response.data);
+        } catch (error) {
+            console.error(`Failed to ${method} data for ${url}`, error.response ? error.response.data : error.message);
+            res.status(500).json({ error: `Failed to ${method} data from the API` });
+        }
+    });
+};
+
+// Create endpoints
+createEndpoint("get", "/api/dashboard-pages", {
+    method: "get",
+    url: "https://testfrog.kanbanize.com/api/v2/dashboardPages"
 });
 
-// Endpoint to fetch workspaces based on dashboard_page_id
-router.get("/api/dashboard-pages/:dashboardId/workspaces", async (req, res) => {
-    const dashboardId = req.params.dashboardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/dashboardPages/${dashboardId}/workspaces`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
+createEndpoint("get", "/api/dashboard-pages/:dashboardId/workspaces", {
+    method: "get",
+    url: params => `https://testfrog.kanbanize.com/api/v2/dashboardPages/${params.dashboardId}/workspaces`
 });
 
-// Endpoint to fetch workspace details
-router.get("/api/workspaces/:workspaceId", async (req, res) => {
-    const workspaceId = req.params.workspaceId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/workspaces/${workspaceId}`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
+createEndpoint("get", "/api/workspaces/:workspaceId", {
+    method: "get",
+    url: params => `https://testfrog.kanbanize.com/api/v2/workspaces/${params.workspaceId}`
 });
 
-// Endpoint to fetch all boards
-router.get("/api/boards", async (req, res) => {
-    try {
-        const response = await axios.get("https://testfrog.kanbanize.com/api/v2/boards", {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
+createEndpoint("get", "/api/boards", {
+    method: "get",
+    url: "https://testfrog.kanbanize.com/api/v2/boards"
 });
 
-// Endpoint to fetch workflows based on board_id
-router.get("/api/boards/:boardId/workflows", async (req, res) => {
-    const boardId = req.params.boardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/workflows`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + error });
-    }
+createEndpoint("get", "/api/boards/:boardId/workflows", {
+    method: "get",
+    url: params => `https://testfrog.kanbanize.com/api/v2/boards/${params.boardId}/workflows`
 });
 
-// Endpoint to fetch columns based on board_id
-router.get("/api/boards/:boardId/columns", async (req, res) => {
-    const boardId = req.params.boardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/columns`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        console.error(`Failed to fetch columns for board ${boardId}`, error.response ? error.response.data : error.message);
-        res.status(500).json({ error: "Failed to fetch data from the API" });
-    }
+createEndpoint("get", "/api/boards/:boardId/columns", {
+    method: "get",
+    url: params => `https://testfrog.kanbanize.com/api/v2/boards/${params.boardId}/columns`
 });
 
-// Endpoint to fetch swimlanes based on board_id
-router.get("/api/boards/:boardId/lanes", async (req, res) => {
-    const boardId = req.params.boardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/boards/${boardId}/lanes`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        console.error(`Failed to fetch swimlanes for board ${boardId}`, error.response ? error.response.data : error.message);
-        res.status(500).json({ error: "Failed to fetch data from the API" });
-    }
+createEndpoint("get", "/api/boards/:boardId/lanes", {
+    method: "get",
+    url: params => `https://testfrog.kanbanize.com/api/v2/boards/${params.boardId}/lanes`
 });
 
-// Endpoint to fetch cards based on board_id
-router.get("/api/boards/:boardId/cards", async (req, res) => {
-    const boardId = req.params.boardId;
-    try {
-        const response = await axios.get(`https://testfrog.kanbanize.com/api/v2/cards?board_ids=${boardId}`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to fetch data from the API: " + boardId + error});
-    }
+createEndpoint("get", "/api/boards/:boardId/cards", {
+    method: "get",
+    url: params => `https://testfrog.kanbanize.com/api/v2/cards?board_ids=${params.boardId}`
 });
 
-// Endpoint to delete cards based on cardID
-router.delete("/api/cards/:cardId/delete", async (req, res) => {
-    const cardId = req.params.cardId;
-    try {
-        const response = await axios.delete(`https://testfrog.kanbanize.com/api/v2/cards/${cardId}`, {
-            headers: {
-                "apikey": apiKeyValue
-            }
-        });
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to delete data from the card: " + cardId + error});
-    }
+createEndpoint("delete", "/api/cards/:cardId/delete", {
+    method: "delete",
+    url: params => `https://testfrog.kanbanize.com/api/v2/cards/${params.cardId}`
 });
 
+createEndpoint("get", "/api/cards/:cardId", {
+    method: "get",
+    url: params => `https://testfrog.kanbanize.com/api/v2/cards/${params.cardId}`
+});
+
+// Add PATCH endpoint for updating cards
+createEndpoint("patch", "/api/cards/:cardId", {
+    method: "patch",
+    url: params => `https://testfrog.kanbanize.com/api/v2/cards/${params.cardId}`,
+    data: (data) => ({
+        title: data.title,
+        description: data.description
+    })
+});
 
 module.exports = router;

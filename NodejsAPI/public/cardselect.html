@@ -6,7 +6,6 @@
     <title>View Cards</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/cardsAccess.js" defer></script>
-    <script src="js/deleteButton.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -20,15 +19,14 @@
             </div>
             <br>
             <div class="button-container">
-                <button type="edit" class="button" id="editButton">Edit</button>
-                <button type="submit" class="button">View Cards</button>
-                <button type="delete" class="button" id="deleteButton">Delete</button>
+                <button type="submit" class="button" id="viewButton">View Cards</button>
             </div>
             <table id="cardsTable" class="styled-table">
                 <thead>
                     <tr>
                         <th>Card ID</th>
                         <th>Title</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,6 +34,24 @@
                 </tbody>
             </table>
         </form>
+        <div id="popup" class="popup"></div>
+    </div>
+
+    <!-- Edit Popup Modal -->
+    <div id="editPopup" class="modal">
+        <div class="modal-content">
+            <span id="editClose" class="close">&times;</span>
+            <h2>Edit Card</h2>
+            <label for="getTitle">Title:</label>
+            <input type="text" id="getTitle" name="Title" required>
+            <br>
+
+            <label for="getDescription">Description:</label>
+            <textarea id="getDescription" name="Description" rows=10></textarea>
+            <br>
+            
+            <button id="editSubmit" class="button">Submit</button>
+        </div>
     </div>
 </body>
 </html>

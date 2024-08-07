@@ -42,15 +42,12 @@ app.get("/cards", (req, res) => {
 // Use the routes defined in routes.js
 app.use(routes);
 
-// Handle GET requests
-app.get("/get", (req, res) => {
-    
-    const {Workflow, Column, Swimlane, Title, Description, Colour } = req.query;
+app.get("/post", (req, res) => {
+    const { Workflow, Column, Swimlane, Title, Description, Colour } = req.query;
 
     const FixedDescription = Description.replace(/\n/g,"<br>");
     const FixedColour = Colour.replace("#","");
     const postData = {
-
         "title": Title,
         "description": FixedDescription,
         "workflow_id": parseInt(Workflow, 10),
@@ -65,34 +62,16 @@ app.get("/get", (req, res) => {
             apikey: apiKeyValue
         }
     })
+    // eslint-disable-next-line no-unused-vars
     .then(response => {
-        console.log(response.data);
-        res.send(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Response</title>
-                <link rel="stylesheet" href="css/styles.css">
-            </head>
-            <body>
-                <h1>POST Request Successful</h1>
-                <div class="response-container">
-                    <h2>Response Data:</h2>
-                    <pre>${JSON.stringify(response.data, null, 2)}</pre>
-                    <a href="/cardcreate" class="button">Back to Create Card</a>
-                </div>
-            </body>
-            </html>
-        `);
+        res.json({ success: true });
     })
     .catch(error => {
-        console.log(Column + "asdf");
         console.error("Error posting data:", error);
-        res.status(500).send("Error posting data");
+        res.status(500).json({ success: false, message: "Error posting data" });
     });
 });
+
 
 // Create HTTPS server
 https.createServer(options, app).listen(port, () => {
