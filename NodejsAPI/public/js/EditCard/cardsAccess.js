@@ -1,3 +1,8 @@
+import { fetchTagsForCard, updateAvailableTagsForBoard } from "./tags.js";
+import { fetchStickersForCard, updateAvailableStickersForBoard } from "./stickers.js";
+import { showPopup } from "./common.js";
+import { state } from "./globals.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const boardSelect = document.getElementById("board");
 
@@ -20,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault(); // Prevent form from submitting normally
         fetchCards();
     });
+
+    // Otherwise it calls multiple times
+    const editButton = document.getElementById("editSubmit");
+    editButton.addEventListener("click", handleEditSubmit);
 });
 
 function fetchCards() {
@@ -29,14 +38,13 @@ function fetchCards() {
     tbody.innerHTML = ""; // Clear previous data
 
     if (!boardId) {
-        return;
+        return; // Required attribute on select element will handle alerting user
     }
 
     // Fetch cards in the selected board
     fetch(`/api/boards/${boardId}/cards`)
         .then(response => response.json())
         .then(data => {
-            // data[] --> pagination, data
             const cards = data.data.data;
             cards.forEach(card => {
                 const row = document.createElement("tr");
@@ -56,7 +64,7 @@ function fetchCards() {
                 editButton.classList.add("small-button", "edit-button");
                 editButton.addEventListener("click", event => {
                     event.preventDefault();
-                    editCard(card.card_id);
+                    editCard(card.card_id, boardId);
                 });
 
                 const deleteButton = document.createElement("button");
@@ -66,7 +74,9 @@ function fetchCards() {
                     event.preventDefault();
                     deleteCard(card.card_id, row);
                 });
-                
+
+                // Add buttons next to each other
+                cellActions.classList.add("button-container");
                 cellActions.appendChild(editButton);
                 cellActions.appendChild(deleteButton);
 
@@ -99,20 +109,38 @@ function deleteCard(cardId, row) {
     });
 }
 
-async function editCard(cardId) {
+async function editCard(cardId, boardId) {
     const editPopup = document.getElementById("editPopup");
     const descriptionTextbox = document.getElementById("getDescription");
-    const titleTextbox = document.getElementById("getTitle");
+    const titleText = document.getElementById("getTitle");
+    const currentTagsContainer = document.getElementById("currentTags");
+    const availableTagsContainer = document.getElementById("availableTags");
+    const currentStickersContainer = document.getElementById("currentStickers");
+    const availableStickersContainer = document.getElementById("availableStickers");
     const editClose = document.getElementById("editClose");
-    const editButton = document.getElementById("editSubmit");
 
+    let currentTags = [];
+    let currentStickers = [];
+
+    state.currentEditingCardId = cardId; // Set the current editing card ID
+
+    // Fetch card details
     await fetch(`/api/cards/${cardId}`)
         .then(response => response.json())
         .then(data => {
             const card = data.data;
             descriptionTextbox.value = card.description.replaceAll("<p>", "").replaceAll("</p>", "\n");
-            titleTextbox.value = card.title;
+            descriptionTextbox.value = descriptionTextbox.value.replaceAll("<br>", "\n");
+            titleText.value = card.title;
         });
+
+    // Fetch and display tags
+    currentTags = await fetchTagsForCard(cardId, availableTagsContainer, currentTagsContainer);
+    await updateAvailableTagsForBoard(boardId, currentTags, availableTagsContainer, currentTagsContainer);
+
+    // Fetch and display stickers
+    currentStickers = await fetchStickersForCard(cardId, availableStickersContainer, currentStickersContainer);
+    await updateAvailableStickersForBoard(boardId, currentStickers, availableStickersContainer, currentStickersContainer);
 
     // Show the popup
     editPopup.style.display = "block";
@@ -121,47 +149,62 @@ async function editCard(cardId) {
     editClose.addEventListener("click", () => {
         editPopup.style.display = "none";
     });
+}
 
-    // Handle the submit button click event
-    editButton.addEventListener("click", event => {
-        event.preventDefault();
-        
-        const updatedTitle = titleTextbox.value;
-        const updatedDescription = descriptionTextbox.value.replace(/\n/g,"<br>");
+function handleEditSubmit() {
+    const cardId = state.currentEditingCardId; // Use the globally set cardId
+    if (!cardId) return; // No card is being edited
 
-        fetch(`/api/cards/${cardId}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                title: updatedTitle,
-                description: updatedDescription
-            })
+    const editPopup = document.getElementById("editPopup");
+    const descriptionTextbox = document.getElementById("getDescription");
+    const titleText = document.getElementById("getTitle");
+    const currentTagsContainer = document.getElementById("currentTags");
+    const currentStickersContainer = document.getElementById("currentStickers");
+
+    const updatedTitle = titleText.value;
+    const updatedDescription = descriptionTextbox.value.replace(/\n/g, "<br>");
+    
+    const tagIdsToAdd = Array.from(currentTagsContainer.children)
+        .map(tag => tag.dataset.tagId)
+        .filter(tagId => tagId && !state.originalTags.includes(parseInt(tagId))); // Only include new tags
+
+    const stickerIdsToAdd = Array.from(currentStickersContainer.children)
+        .map(sticker => sticker.dataset.stickerId)
+        .filter(stickerId => stickerId && !state.originalStickers.includes(parseInt(stickerId))); // Only include new stickers
+
+    const tagIdsToRemove = state.deletedTagsIds;
+    const stickerIdsToRemove = state.deletedStickersIds;
+
+    fetch(`/api/cards/${cardId}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: updatedTitle,
+            description: updatedDescription,
+            tag_ids_to_add: tagIdsToAdd,
+            tag_ids_to_remove: tagIdsToRemove,
+            stickers_to_add: stickerIdsToAdd.map(stickerId => ({ sticker_id: stickerId })),
+            sticker_ids_to_remove: stickerIdsToRemove
         })
-        .then(response => {
-            if (response.ok) {
-                showPopup(`Card with ID ${cardId} was updated`, "success");
-                editPopup.style.display = "none";
-                fetchCards(); // Refresh the cards
-            } else {
-                showPopup("Failed to update card", "error");
-            }
-        })
-        .catch(error => {
-            console.error("Failed to update card: ", error.message);
-            showPopup("Failed to update card", "error");
-        });
+    })
+    .then(() => {
+        state.deletedTagsIds = [];
+        state.deletedStickersIds = [];
+        showPopup(`Card with ID ${cardId} was updated`, "success");
+        // Refresh the card menu
+        editPopup.style.display = "none";
+        fetchCards();
+    })
+    .catch(error => {
+        console.error("Failed to update card: ", error.message);
+        showPopup("Failed to update card", "error");
     });
 }
 
-function showPopup(message, type) {
-    const popup = document.getElementById("popup");
-    popup.textContent = message;
-    popup.className = `popup ${type}`;
-    popup.style.display = "block";
 
-    setTimeout(() => {
-        popup.style.display = "none";
-    }, 3000);
-}
+
+
+
+

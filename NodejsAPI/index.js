@@ -1,11 +1,16 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const path = require("path");
-const axios = require("axios");
-const https = require("https");
-const fs = require("fs");
+import express from "express";
+import bodyParser from "body-parser";
+import path from "path";
+import axios from "axios";
+import https from "https";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-const routes = require("./routes");
+// Import the routes
+import routes from "./routes.js"; // Update the path as needed
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 5500;
@@ -17,8 +22,8 @@ app.use(express.json());
 
 // Read the SSL certificate files
 const options = {
-    key: fs.readFileSync("key.pem"),
-    cert: fs.readFileSync("cert.pem")
+    key: fs.readFileSync(path.join(__dirname, "key.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "cert.pem"))
 };
 
 // Serve static files from the "public" directory
@@ -72,8 +77,7 @@ app.get("/post", (req, res) => {
     });
 });
 
-
 // Create HTTPS server
 https.createServer(options, app).listen(port, () => {
-    console.log("HTTPS Server running on https://localhost:" + port);
+    console.log(`HTTPS Server running on https://localhost:${port}`);
 });

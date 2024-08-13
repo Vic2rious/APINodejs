@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Cards</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="js/cardsAccess.js" defer></script>
+    <script type="module" src="/js/EditCard/common.js"></script>
+    <script type="module" src="/js/EditCard/tags.js"></script>
+    <script type="module" src="/js/EditCard/stickers.js"></script>
+    <script type="module" src="/js/EditCard/cardsAccess.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -38,20 +41,34 @@
     </div>
 
     <!-- Edit Popup Modal -->
-    <div id="editPopup" class="modal">
-        <div class="modal-content">
-            <span id="editClose" class="close">&times;</span>
-            <h2>Edit Card</h2>
-            <label for="getTitle">Title:</label>
-            <input type="text" id="getTitle" name="Title" required>
-            <br>
+<div id="editPopup" class="modal">
+    <div class="modal-content">
+        <span id="editClose" class="close">&times;</span>
+        <h2>Edit Card</h2>
+        <label for="getTitle">Title</label>
+        <input type="text" id="getTitle">
+    
+        <label for="getDescription">Description</label>
+        <textarea id="getDescription" rows="10"></textarea>
+    
+        <label for="currentTags">Current Tags</label>
+        <div id="currentTags" class="current-tags"></div>
 
-            <label for="getDescription">Description:</label>
-            <textarea id="getDescription" name="Description" rows=10></textarea>
-            <br>
-            
-            <button id="editSubmit" class="button">Submit</button>
-        </div>
+        <label for="availableTags">Available Tags</label>
+        <div id="availableTags" class="available-tags"></div>
+        <br>
+
+        <label for="currentStickers">Current Stickers</label>
+        <div id="currentStickers" class="current-stickers"></div>
+
+        <label for="availableStickers">Available Stickers</label>
+        <div id="availableStickers" class="available-stickers"></div>
+        <br>
+    
+        <button id="editSubmit" class="button">Update</button>
     </div>
+</div>
+
+    
 </body>
 </html>
