@@ -20,10 +20,15 @@
                     <option value="">Select a board</option>
                 </select>
             </div>
+            <div class="form-group">
+                <input type="text" id="search" placeholder="Search by title">
+            </div>
             <br>
             <div class="button-container">
                 <button type="submit" class="button" id="viewButton">View Cards</button>
             </div>
+
+
             <table id="cardsTable" class="styled-table">
                 <thead>
                     <tr>
@@ -47,25 +52,36 @@
         <h2>Edit Card</h2>
         <label for="getTitle">Title</label>
         <input type="text" id="getTitle">
-    
+        <br>
+
         <label for="getDescription">Description</label>
         <textarea id="getDescription" rows="10"></textarea>
-    
+        <br>
+
         <label for="currentTags">Current Tags</label>
         <div id="currentTags" class="current-tags"></div>
+        <br>
 
         <label for="availableTags">Available Tags</label>
         <div id="availableTags" class="available-tags"></div>
         <br>
 
         <label for="currentStickers">Current Stickers</label>
-        <div id="currentStickers" class="current-stickers"></div>
+        <div id="currentStickers" class="row-container"></div>
+        <br>
 
         <label for="availableStickers">Available Stickers</label>
-        <div id="availableStickers" class="available-stickers"></div>
+        <div id="availableStickers" class="row-container"></div>
         <br>
-    
+        <br>
         <button id="editSubmit" class="button">Update</button>
+    </div>
+</div>
+
+<div id="loadingModal" class="loading-modal" style="display: none;">
+    <div class="loading-content">
+        <img src="images/transparent-zergling.gif" alt="Loading..." />
+        <p>Loading...</p>
     </div>
 </div>
 

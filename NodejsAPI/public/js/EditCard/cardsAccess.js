@@ -1,10 +1,55 @@
 import { fetchTagsForCard, updateAvailableTagsForBoard } from "./tags.js";
 import { fetchStickersForCard, updateAvailableStickersForBoard } from "./stickers.js";
-import { showPopup } from "./common.js";
+import { showPopup, moveElement, showLoading, hideLoading } from "./common.js";
 import { state } from "./globals.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const boardSelect = document.getElementById("board");
+    const currentStickersContainer = document.getElementById("currentStickers");
+    const availableStickersContainer = document.getElementById("availableStickers");
+    const currentTagsContainer = document.getElementById("currentTags");
+    const availableTagsContainer = document.getElementById("availableTags");
+    const editClose = document.getElementById("editClose");
+    const editPopup = document.getElementById("editPopup");
+
+    // Attach event listener to container 1 for cloning elements
+    availableStickersContainer.addEventListener("click", function(event) {
+        if (event.target.classList.contains("box")) {
+        const box = event.target;
+        const clone = box.cloneNode(true); // Clone the clicked element
+        
+        currentStickersContainer.appendChild(clone);
+        }
+    });
+
+    // Attach event listener to container 2 for removing elements
+    currentStickersContainer.addEventListener("click", function(event) {
+        if (event.target.classList.contains("box")) {
+
+            event.target.remove(); // Remove the clicked box from container 2
+        }
+    });
+    
+    // Attach event listener to container 1 for cloning elements
+    availableTagsContainer.addEventListener("click", function(event) {
+        if (event.target.classList.contains("box")) {
+            moveElement(event, currentTagsContainer);
+        }
+    });
+
+    // Attach event listener to container 2 for removing elements
+    currentTagsContainer.addEventListener("click", function(event) {
+        if (event.target.classList.contains("box")) {
+
+            moveElement(event, availableTagsContainer);
+        }
+    });
+    
+
+    // Close the popup when the close icon is clicked
+    editClose.addEventListener("click", () => {
+        editPopup.style.display = "none";
+    });
 
     // Fetch all boards
     fetch("/api/boards")
@@ -29,20 +74,26 @@ document.addEventListener("DOMContentLoaded", () => {
     // Otherwise it calls multiple times
     const editButton = document.getElementById("editSubmit");
     editButton.addEventListener("click", handleEditSubmit);
+
+    const searchInput = document.getElementById("search");
+    searchInput.addEventListener("input", filterCardsByTitle);
 });
 
-function fetchCards() {
+async function fetchCards() {
+    showLoading(); // Show loading screen before async operation
+
     const boardId = document.getElementById("board").value;
     const cardsTable = document.getElementById("cardsTable");
     const tbody = cardsTable.querySelector("tbody");
     tbody.innerHTML = ""; // Clear previous data
 
     if (!boardId) {
+        hideLoading(); // Hide loading screen if no board is selected
         return; // Required attribute on select element will handle alerting user
     }
 
     // Fetch cards in the selected board
-    fetch(`/api/boards/${boardId}/cards`)
+    await fetch(`/api/boards/${boardId}/cards`)
         .then(response => response.json())
         .then(data => {
             const cards = data.data.data;
@@ -54,10 +105,11 @@ function fetchCards() {
 
                 cellId.textContent = card.card_id;
                 cellTitle.textContent = card.title;
+                cellTitle.classList.add("card-title");
 
                 cellId.style.color = `#${card.color}`;
                 cellId.style.fontWeight = "bold";
-                
+
                 // Create edit and delete buttons
                 const editButton = document.createElement("button");
                 editButton.textContent = "Edit";
@@ -87,12 +139,17 @@ function fetchCards() {
             });
 
             cardsTable.style.display = "table";
+            filterCardsByTitle();  // Filter cards initially when they are loaded
         })
         .catch(error => console.error("Error fetching cards:", error));
+
+    hideLoading();
 }
 
-function deleteCard(cardId, row) {
-    fetch(`/api/cards/${cardId}/delete`, {
+async function deleteCard(cardId, row) {
+    showLoading();
+
+    await fetch(`/api/cards/${cardId}/delete`, {
         method: "DELETE"
     })
     .then(response => {
@@ -107,9 +164,13 @@ function deleteCard(cardId, row) {
         console.error("Failed to delete card: ", error.message);
         showPopup("Failed to delete card", "error");
     });
+
+    hideLoading();
 }
 
 async function editCard(cardId, boardId) {
+    showLoading();
+
     const editPopup = document.getElementById("editPopup");
     const descriptionTextbox = document.getElementById("getDescription");
     const titleText = document.getElementById("getTitle");
@@ -117,7 +178,6 @@ async function editCard(cardId, boardId) {
     const availableTagsContainer = document.getElementById("availableTags");
     const currentStickersContainer = document.getElementById("currentStickers");
     const availableStickersContainer = document.getElementById("availableStickers");
-    const editClose = document.getElementById("editClose");
 
     let currentTags = [];
     let currentStickers = [];
@@ -135,23 +195,22 @@ async function editCard(cardId, boardId) {
         });
 
     // Fetch and display tags
-    currentTags = await fetchTagsForCard(cardId, availableTagsContainer, currentTagsContainer);
-    await updateAvailableTagsForBoard(boardId, currentTags, availableTagsContainer, currentTagsContainer);
+    currentTags = await fetchTagsForCard(cardId, currentTagsContainer);
+    await updateAvailableTagsForBoard(boardId, currentTags, availableTagsContainer);
 
     // Fetch and display stickers
-    currentStickers = await fetchStickersForCard(cardId, availableStickersContainer, currentStickersContainer);
-    await updateAvailableStickersForBoard(boardId, currentStickers, availableStickersContainer, currentStickersContainer);
+    currentStickers = await fetchStickersForCard(cardId, currentStickersContainer);
+    await updateAvailableStickersForBoard(boardId, currentStickers, availableStickersContainer);
 
     // Show the popup
     editPopup.style.display = "block";
 
-    // Close the popup when the close icon is clicked
-    editClose.addEventListener("click", () => {
-        editPopup.style.display = "none";
-    });
+    hideLoading();
 }
 
-function handleEditSubmit() {
+async function handleEditSubmit() {
+    showLoading();
+
     const cardId = state.currentEditingCardId; // Use the globally set cardId
     if (!cardId) return; // No card is being edited
 
@@ -166,16 +225,14 @@ function handleEditSubmit() {
     
     const tagIdsToAdd = Array.from(currentTagsContainer.children)
         .map(tag => tag.dataset.tagId)
-        .filter(tagId => tagId && !state.originalTags.includes(parseInt(tagId))); // Only include new tags
 
     const stickerIdsToAdd = Array.from(currentStickersContainer.children)
         .map(sticker => sticker.dataset.stickerId)
-        .filter(stickerId => stickerId && !state.originalStickers.includes(parseInt(stickerId))); // Only include new stickers
 
     const tagIdsToRemove = state.deletedTagsIds;
     const stickerIdsToRemove = state.deletedStickersIds;
 
-    fetch(`/api/cards/${cardId}`, {
+    await fetch(`/api/cards/${cardId}`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -201,9 +258,27 @@ function handleEditSubmit() {
         console.error("Failed to update card: ", error.message);
         showPopup("Failed to update card", "error");
     });
+
+    hideLoading();
 }
 
+function filterCardsByTitle() {
+    const searchInput = document.getElementById("search");
+    const searchQuery = searchInput.value;
+    const regex = new RegExp(searchQuery, "i");  // Create regex from search input, case-insensitive
+    const cardRows = document.querySelectorAll("#cardsTable tbody tr");
 
+    cardRows.forEach(row => {
+        const titleCell = row.querySelector(".card-title");
+        const titleText = titleCell.textContent;
+
+        if (regex.test(titleText)) {
+            row.style.display = "";  // Show the row if it matches the regex
+        } else {
+            row.style.display = "none";  // Hide the row if it doesn't match
+        }
+    });
+}
 
 
 

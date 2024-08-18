@@ -1,97 +1,68 @@
 //import { showPopup } from './common.js';
 import { state } from "./globals.js";
 
-export async function fetchStickersForCard(cardId, availableStickersContainer, currentStickersContainer) {
-    let currentStickers = [];
+export async function fetchStickersForCard(cardId, currentStickersContainer) {
+    const response = await fetch(`/api/cards/${cardId}/stickers`);
+    const data = await response.json();
+    const stickers = data.data;
 
     const allStickers = await fetchAllStickers();
 
-    await fetch(`/api/cards/${cardId}/stickers`)
-        .then(response => response.json())
-        .then(data => {
-            currentStickers = data.data;
-            currentStickersContainer.innerHTML = ""; // Clear previous stickers
-            state.originalStickers = currentStickers.map(sticker => sticker.sticker_id);
+    currentStickersContainer.innerHTML = ""; // Clear previous stickers
+    state.deletedStickersIds = stickers.map(sticker => sticker.id);
 
-            currentStickers.forEach(currentSticker => {
-                const filteredSticker = allStickers.find(sticker => sticker.sticker_id === currentSticker.sticker_id);
-                const stickerButton = document.createElement("button");
-                stickerButton.textContent = filteredSticker.label;
-                stickerButton.style.backgroundColor = `#${filteredSticker.color}`;
-                stickerButton.classList.add("sticker-badge");
-                stickerButton.dataset.stickerId = filteredSticker.sticker_id;
 
-                stickerButton.addEventListener("click", () => {
-                    // Mark sticker for deletion (with appropriate id)
-                    state.deletedStickersIds.push(currentSticker.id); 
-                    availableStickersContainer.appendChild(stickerButton); // Move sticker to available container
+    stickers.forEach(currentSticker => {
+        const filteredSticker = allStickers.find(sticker => sticker.sticker_id === currentSticker.sticker_id);
+        const stickerDiv = document.createElement("div");
+        stickerDiv.textContent = filteredSticker.label; // Assuming label is the text content for stickers
+        stickerDiv.classList.add("sticker");
+        stickerDiv.classList.add("box");
+        stickerDiv.dataset.stickerId = filteredSticker.sticker_id;
+        stickerDiv.dataset.id = currentSticker.id; // Include the id
+        stickerDiv.style.backgroundColor = `#${filteredSticker.color}`;
 
-                    // Remove old click event and add new one to move sticker back to current
-                    stickerButton.removeEventListener("click", null);
-                    stickerButton.addEventListener("click", () => {
-                        state.deletedStickersIds = state.deletedStickersIds.filter(id => id !== currentSticker.id); // Unmark deletion
-                        currentStickersContainer.appendChild(stickerButton); // Move sticker back to current container
-                    });
-                });
-                
+        currentStickersContainer.appendChild(stickerDiv);
+    });
 
-                currentStickersContainer.appendChild(stickerButton);
-            });
-        });
-
-    return currentStickers;
+    return stickers;
 }
 
 
-export async function updateAvailableStickersForBoard(boardId, currentStickers, availableStickersContainer, currentStickersContainer) {
+
+export async function updateAvailableStickersForBoard(boardId, currentStickers, availableStickersContainer) {
     const allStickers = await fetchAllStickers();
 
-    // Fetch stickers specific to the board
-    const boardStickersResponse = await fetch(`/api/${boardId}/stickers`);
+    const boardStickersResponse = await fetch(`/api/boards/${boardId}/stickers`);
     const boardStickersData = await boardStickersResponse.json();
     const boardStickers = boardStickersData.data;
 
-    // Filter out current stickers from the board-specific stickers
     const availableStickers = boardStickers
         .map(boardSticker => {
-            const matchedSticker = allStickers.find(sticker => sticker.sticker_id === boardSticker.sticker_id);
-            const currentStickerMatch = currentStickers.find(currentSticker => currentSticker.sticker_id === boardSticker.sticker_id);
-            if (matchedSticker && currentStickerMatch) {
-                return {
-                    ...matchedSticker,
-                    id: currentStickerMatch.id // Add the id from currentStickers
-                };
-            }
-            return matchedSticker;
+            const sticker = allStickers.find(sticker => sticker.sticker_id === boardSticker.sticker_id);
+            return {
+                ...sticker,
+                id: null
+            };
         })
+        //.filter(sticker => sticker && !currentStickers.some(currentSticker => currentSticker.sticker_id === sticker.sticker_id));
 
-    // Clear previous stickers in the available container
     availableStickersContainer.innerHTML = "";
 
-    // Populate the available stickers container
     availableStickers.forEach(sticker => {
-        const stickerButton = document.createElement("button");
-        stickerButton.textContent = sticker.label;
-        stickerButton.style.backgroundColor = `#${sticker.color}`;
-        stickerButton.dataset.stickerId = sticker.sticker_id;
+        const stickerDiv = document.createElement("div");
+        stickerDiv.textContent = sticker.label; // Assuming label is the text content for stickers
+        stickerDiv.classList.add("sticker");
+        stickerDiv.classList.add("box");
+        stickerDiv.dataset.stickerId = sticker.sticker_id;
+        if (sticker.id) stickerDiv.dataset.id = sticker.id;
 
-        stickerButton.addEventListener("click", () => {
-            // Move sticker from available to current
-            state.deletedStickersIds = state.deletedStickersIds.filter(id => id !== sticker.id); // Ensure it's not marked for deletion
-            currentStickersContainer.appendChild(stickerButton);
+        stickerDiv.style.backgroundColor = `#${sticker.color}`;
 
-            // Remove old click event and add new one to move sticker back to available
-            stickerButton.removeEventListener("click", null);
-            stickerButton.addEventListener("click", () => {
-                // Move sticker back to available
-                state.deletedStickersIds.push(sticker.id);
-                availableStickersContainer.appendChild(stickerButton);
-            });
-        });
-
-        availableStickersContainer.appendChild(stickerButton);
+        availableStickersContainer.appendChild(stickerDiv);
     });
 }
+
 
 
 

@@ -1,4 +1,4 @@
-/* Ensure that the body has a smooth background transition */
+/* Smooth background transition with animated gradient */
 body {
     font-family: Arial, sans-serif;
     background: linear-gradient(270deg, #77a1d3, #79cbca, #e684ae);
@@ -13,35 +13,105 @@ body {
 }
 
 @keyframes gradientBackground {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-h1 {
+h1, h2 {
     color: #fff;
     text-align: center;
 }
 
 h2 {
-    color: #000000;
+    color: #000;
 }
 
-.button-container {
+.container {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.button, input[type="submit"] {
-    padding: 15px 30px;
+/* Form styles */
+form {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    min-width: 300px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* General Input Styles */
+input[type="text"], input[type="color"], select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="color"]:focus, select:focus, textarea:focus {
+    border-color: #007BFF;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4);
+    outline: none;
+}
+
+input[type="text"]::placeholder, textarea::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Specific Input Styles */
+textarea {
+    height: 35.5%;
+    resize: none;
+}
+
+input[type="color"] {
+    width: 100%;
+    max-width: 100px; /* Adjust the width as needed */
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0;
+    background: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+}
+
+input[type="color"]:hover {
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Styles */
+.button, input[type="submit"], .small-button {
+    padding: 10px 20px;
     font-size: 16px;
     font-weight: bold;
     color: #fff;
@@ -50,34 +120,21 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    text-decoration: none;
     text-align: center;
+    text-decoration: none;
 }
 
-
-
-.button:hover, input[type="submit"]:hover {
+.button:hover, input[type="submit"]:hover, .small-button:hover {
     background-color: #1d4996;
 }
 
 .small-button {
     padding: 5px 15px;
     font-size: 11px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #2F71E4;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    text-align: center;
-    display: inline-block; /* Ensure buttons are inline */
 }
 
 .edit-button {
     background-color: #fbb730;
-    margin-right: 10px;
 }
 
 .edit-button:hover {
@@ -92,105 +149,47 @@ h2 {
     background-color: #901111;
 }
 
-/* Apply a fixed width and height to the form and smooth transitions */
-form {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/* Form Group Styles */
+.form-group {
+    margin: 20px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 50%;
-    max-width: 800px;
-    transition: all 0.3s ease;
-    min-width: 300px; /* Ensure a minimum width to prevent form from becoming too small */
+    width: 100%;
+}
+
+.form-group select, .form-group input[type="text"] {
+    max-width: 300px;
 }
 
 .form-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: 20px; /* Space between the sections */
     width: 100%;
 }
 
 .form-section {
-    flex: 1;
-    margin: 0 20px;
+    flex: 1; /* Makes sections flexible and distribute evenly */
+    min-width: 45%; /* Ensures that each section takes at least 45% of the container width */
+    box-sizing: border-box; /* Ensures padding and border are included in the width */
 }
-
-label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-input[type="text"], input[type="color"], select, textarea {
+/* Button Container */
+.button-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    resize: none; /* Don't allow the user to resize the textarea */
 }
 
-textarea {
-    height: 35.5%; /* Let the textarea fit the content */
-}
-
-.response-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    max-width: 600px;
-    margin: 20px;
-}
-
-pre {
-    background-color: #f4f4f4;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-/* Specific styles for the color picker */
-input[type="color"] {
-    width: 106%;
-    appearance: none;
-    -webkit-appearance: none;
-    height: 40px;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    border-radius: 4px;
-    overflow: hidden;
-    background: none;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-input[type="color"]::-webkit-color-swatch {
-    border: none;
-    border-radius: 4px;
-}
-
-/* Optional: adding hover effect to the color picker */
-input[type="color"]:hover {
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
-}
-
-/* Table styles */
+/* Table Styles */
 .styled-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    display: none; /* Initially hide the table */
+    display: none;
 }
 
 .styled-table thead tr {
@@ -204,44 +203,18 @@ input[type="color"]:hover {
 }
 
 .styled-table tbody tr {
-    border-bottom: 2px solid #000000;
+    border-bottom: 2px solid #000;
 }
 
-/* Highlight selected row */
 .styled-table tbody tr.selected {
     background-color: #b2d6fa;
 }
 
-/* Change color on hover, except for selected rows */
 .styled-table tbody tr:not(.selected):hover {
-    background-color: #f1f1f1; /* Light grey color on hover */
+    background-color: #f1f1f1;
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 800px; /* Ensure container does not exceed a maximum width */
-    margin: 0 auto; /* Center the container */
-    padding: 20px;
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-}
-
-/* Fixed width for select element to prevent resizing */
-select#board {
-    width: 100%;
-    max-width: 300px; /* Set a maximum width */
-    min-width: 200px; /* Set a minimum width */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-}
-
-/* Popup box styles */
+/* Popup Box Styles */
 .popup {
     position: fixed;
     top: 20px;
@@ -266,24 +239,23 @@ select#board {
 
 /* Modal Styles */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 1;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
+    margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 80%;
 }
 
 .close {
@@ -299,3 +271,51 @@ select#board {
     cursor: pointer;
 }
 
+/* Loading Modal Styles */
+.loading-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-content img {
+    width: 200px;
+}
+
+.loading-content p {
+    color: #fff;
+    font-size: 36px;
+    margin-top: 10px;
+}
+
+/* Box Element */
+.box {
+    padding: 10px 20px;
+    background-color: #3498db;
+    margin: 5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.box:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}

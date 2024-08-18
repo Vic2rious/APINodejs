@@ -3,6 +3,6 @@ export const state = {
     deletedTagsIds: [],
     deletedStickersIds: [], 
     originalTags: [],
-    originalStickers: [],
+    stickersToAdd: [],
     currentEditingCardId: null
 };

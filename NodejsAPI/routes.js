@@ -111,7 +111,7 @@ createEndpoint("delete", "/api/cards/:cardId/tags/:tagId", {
     url: params => `https://testfrog.kanbanize.com/api/v2/cards/${params.cardId}/tags/${params.tagId}`
 });
 
-createEndpoint("get", "/api/:boardId/tags", {
+createEndpoint("get", "/api/boards/:boardId/tags", {
     method: "get",
     url: params => `https://testfrog.kanbanize.com/api/v2/boards/${params.boardId}/tags`
 });
@@ -137,7 +137,7 @@ createEndpoint("delete", "/api/cards/:cardId/stickers/:stickerId", {
     url: params => `https://testfrog.kanbanize.com/api/v2/cards/${params.cardId}/stickers/${params.stickerId}`
 });
 
-createEndpoint("get", "/api/:boardId/stickers", {
+createEndpoint("get", "/api/boards/:boardId/stickers", {
     method: "get",
     url: params => `https://testfrog.kanbanize.com/api/v2/boards/${params.boardId}/stickers`
 });
