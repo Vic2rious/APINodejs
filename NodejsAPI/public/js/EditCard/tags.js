@@ -1,14 +1,10 @@
 //import { showPopup } from './common.js';
 import { state } from "./globals.js";
 
-export async function fetchTagsForCard(cardId, currentTagsContainer) {
+export async function fetchTagsForCard(card, currentTagsContainer, allTags) {
     let currentTags = [];
-
-    const allTags = await fetchAllTags();
-
-    const response = await fetch(`/api/cards/${cardId}/tags`);
-    const data = await response.json();
-    currentTags = data.data;
+    
+    currentTags = card.tag_ids.map(cardTag => allTags.find(tag => tag.tag_id === cardTag))
     currentTagsContainer.innerHTML = ""; // Clear previous tags
     state.deletedTagsIds = currentTags.map(tag => tag.tag_id);
 
@@ -23,23 +19,14 @@ export async function fetchTagsForCard(cardId, currentTagsContainer) {
 
         currentTagsContainer.appendChild(tagDiv);
     });
-
-    return currentTags;
 }
 
-export async function updateAvailableTagsForBoard(boardId, currentTags, availableTagsContainer) {
-    const allTags = await fetchAllTags();
+export async function updateAvailableTagsForBoard(card, availableTagsContainer, allTags) {
 
-    // Fetch tags specific to the board
-    const boardTagsResponse = await fetch(`/api/boards/${boardId}/tags`);
-    const boardTagsData = await boardTagsResponse.json();
-    const boardTags = boardTagsData.data;
-
-    // Filter out current tags from the board-specific tags
-    const availableTags = boardTags
-        .map(boardTag => allTags.find(tag => tag.tag_id === boardTag.tag_id))
-        .filter(tag => tag && !currentTags.some(currentTag => currentTag.tag_id === tag.tag_id));
-
+    const availableTags = allTags.filter(tag => 
+        tag.board_ids.some(board => board.board_id === card.board_id) && 
+        !card.tag_ids.includes(tag.tag_id)
+    );
     // Clear previous tags in the available container
     availableTagsContainer.innerHTML = "";
 
@@ -56,7 +43,7 @@ export async function updateAvailableTagsForBoard(boardId, currentTags, availabl
     });
 }
 
-async function fetchAllTags() {
+export async function fetchAllTags() {
     let allTags = [];
     await fetch("/api/tags")
         .then(response => response.json())

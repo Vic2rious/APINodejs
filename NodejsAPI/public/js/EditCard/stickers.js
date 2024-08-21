@@ -1,18 +1,15 @@
 //import { showPopup } from './common.js';
 import { state } from "./globals.js";
 
-export async function fetchStickersForCard(cardId, currentStickersContainer) {
-    const response = await fetch(`/api/cards/${cardId}/stickers`);
-    const data = await response.json();
-    const stickers = data.data;
+export async function fetchStickersForCard(card, currentStickersContainer, allStickers) {
 
-    const allStickers = await fetchAllStickers();
+    const currentStickers = card.stickers;
 
     currentStickersContainer.innerHTML = ""; // Clear previous stickers
-    state.deletedStickersIds = stickers.map(sticker => sticker.id);
+    state.deletedStickersIds = currentStickers.map(sticker => sticker.id);
 
 
-    stickers.forEach(currentSticker => {
+    currentStickers.forEach(currentSticker => {
         const filteredSticker = allStickers.find(sticker => sticker.sticker_id === currentSticker.sticker_id);
         const stickerDiv = document.createElement("div");
         stickerDiv.textContent = filteredSticker.label; // Assuming label is the text content for stickers
@@ -24,28 +21,16 @@ export async function fetchStickersForCard(cardId, currentStickersContainer) {
 
         currentStickersContainer.appendChild(stickerDiv);
     });
-
-    return stickers;
 }
 
 
 
-export async function updateAvailableStickersForBoard(boardId, currentStickers, availableStickersContainer) {
-    const allStickers = await fetchAllStickers();
+export async function updateAvailableStickersForBoard(card, availableStickersContainer, allStickers) {
 
-    const boardStickersResponse = await fetch(`/api/boards/${boardId}/stickers`);
-    const boardStickersData = await boardStickersResponse.json();
-    const boardStickers = boardStickersData.data;
+    const availableStickers = allStickers.filter(sticker => 
+        sticker.board_ids.some(board => board.board_id === card.board_id)
+    );
 
-    const availableStickers = boardStickers
-        .map(boardSticker => {
-            const sticker = allStickers.find(sticker => sticker.sticker_id === boardSticker.sticker_id);
-            return {
-                ...sticker,
-                id: null
-            };
-        })
-        //.filter(sticker => sticker && !currentStickers.some(currentSticker => currentSticker.sticker_id === sticker.sticker_id));
 
     availableStickersContainer.innerHTML = "";
 

@@ -118,7 +118,7 @@ createEndpoint("get", "/api/boards/:boardId/tags", {
 
 createEndpoint("get", "/api/tags", {
     method: "get",
-    url: "https://testfrog.kanbanize.com/api/v2/tags"
+    url: "https://testfrog.kanbanize.com/api/v2/tags?expand=board_ids"
 });
 
 createEndpoint("get", "/api/cards/:cardId/tags", {
@@ -144,7 +144,7 @@ createEndpoint("get", "/api/boards/:boardId/stickers", {
 
 createEndpoint("get", "/api/stickers", {
     method: "get",
-    url: "https://testfrog.kanbanize.com/api/v2/stickers"
+    url: "https://testfrog.kanbanize.com/api/v2/stickers?expand=board_ids"
 });
 
 createEndpoint("get", "/api/cards/:cardId/stickers", {

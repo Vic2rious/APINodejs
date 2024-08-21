@@ -1,5 +1,5 @@
-import { fetchTagsForCard, updateAvailableTagsForBoard } from "./tags.js";
-import { fetchStickersForCard, updateAvailableStickersForBoard } from "./stickers.js";
+import { fetchTagsForCard, updateAvailableTagsForBoard, fetchAllTags } from "./tags.js";
+import { fetchStickersForCard, updateAvailableStickersForBoard, fetchAllStickers } from "./stickers.js";
 import { showPopup, moveElement, showLoading, hideLoading } from "./common.js";
 import { state } from "./globals.js";
 
@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const availableTagsContainer = document.getElementById("availableTags");
     const editClose = document.getElementById("editClose");
     const editPopup = document.getElementById("editPopup");
+    const clearButton = document.getElementById("clear-btn");
 
     // Attach event listener to container 1 for cloning elements
     availableStickersContainer.addEventListener("click", function(event) {
@@ -51,6 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
         editPopup.style.display = "none";
     });
 
+    clearButton.addEventListener("click", () =>{
+        clearSearch();
+    }); 
+
     // Fetch all boards
     fetch("/api/boards")
         .then(response => response.json())
@@ -66,9 +71,15 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error("Error fetching boards:", error));
 
     const viewButton = document.getElementById("viewButton");
+    
     viewButton.addEventListener("click", event => {
-        event.preventDefault(); // Prevent form from submitting normally
-        fetchCards();
+        const boardId = document.getElementById("board").value;
+        if(boardId) {
+
+            event.preventDefault(); // Prevent form from submitting normally
+            fetchCards();
+            //viewButton.style.display = "none";
+        }
     });
 
     // Otherwise it calls multiple times
@@ -116,7 +127,7 @@ async function fetchCards() {
                 editButton.classList.add("small-button", "edit-button");
                 editButton.addEventListener("click", event => {
                     event.preventDefault();
-                    editCard(card.card_id, boardId);
+                    editCard(card.card_id);
                 });
 
                 const deleteButton = document.createElement("button");
@@ -128,7 +139,7 @@ async function fetchCards() {
                 });
 
                 // Add buttons next to each other
-                cellActions.classList.add("button-container");
+                cellActions.classList.add("small-button-container");
                 cellActions.appendChild(editButton);
                 cellActions.appendChild(deleteButton);
 
@@ -168,7 +179,7 @@ async function deleteCard(cardId, row) {
     hideLoading();
 }
 
-async function editCard(cardId, boardId) {
+async function editCard(cardId) {
     showLoading();
 
     const editPopup = document.getElementById("editPopup");
@@ -179,8 +190,7 @@ async function editCard(cardId, boardId) {
     const currentStickersContainer = document.getElementById("currentStickers");
     const availableStickersContainer = document.getElementById("availableStickers");
 
-    let currentTags = [];
-    let currentStickers = [];
+    let card;
 
     state.currentEditingCardId = cardId; // Set the current editing card ID
 
@@ -188,19 +198,24 @@ async function editCard(cardId, boardId) {
     await fetch(`/api/cards/${cardId}`)
         .then(response => response.json())
         .then(data => {
-            const card = data.data;
+            card = data.data;
             descriptionTextbox.value = card.description.replaceAll("<p>", "").replaceAll("</p>", "\n");
             descriptionTextbox.value = descriptionTextbox.value.replaceAll("<br>", "\n");
             titleText.value = card.title;
         });
 
-    // Fetch and display tags
-    currentTags = await fetchTagsForCard(cardId, currentTagsContainer);
-    await updateAvailableTagsForBoard(boardId, currentTags, availableTagsContainer);
-
-    // Fetch and display stickers
-    currentStickers = await fetchStickersForCard(cardId, currentStickersContainer);
-    await updateAvailableStickersForBoard(boardId, currentStickers, availableStickersContainer);
+            //fetch all tags and stickers
+            const allTags = await fetchAllTags();
+            const allStickers = await fetchAllStickers();
+            
+            // Fetch and display tags
+            await fetchTagsForCard(card, currentTagsContainer, allTags);
+            await updateAvailableTagsForBoard(card, availableTagsContainer, allTags);
+            
+            // Fetch and display stickers
+            await fetchStickersForCard(card, currentStickersContainer, allStickers);
+            await updateAvailableStickersForBoard(card, availableStickersContainer, allStickers);
+            
 
     // Show the popup
     editPopup.style.display = "block";
@@ -278,6 +293,10 @@ function filterCardsByTitle() {
             row.style.display = "none";  // Hide the row if it doesn't match
         }
     });
+}
+
+function clearSearch() {
+    document.getElementById("search").value = "";
 }
 
 

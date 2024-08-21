@@ -184,6 +184,13 @@ input[type="color"]:hover {
     width: 100%;
 }
 
+.small-button-container {
+    display: flex;
+    gap: 10px;
+    align-items: center; 
+    width: 100%;
+}
+
 /* Table Styles */
 .styled-table {
     width: 100%;
@@ -202,6 +209,23 @@ input[type="color"]:hover {
     padding: 12px 15px;
 }
 
+/* Define specific widths for each column */
+.styled-table th:first-child, /* Card ID column */
+.styled-table td:first-child {
+    width: 15%; /* Adjust as needed */
+}
+
+.styled-table th:last-child, /* Actions column */
+.styled-table td:last-child {
+    width: 10%; /* Adjust as needed */
+}
+
+/* Let the "Title" column take the remaining space */
+.styled-table th:nth-child(2), /* Title column */
+.styled-table td:nth-child(2) {
+    width: auto;
+}
+
 .styled-table tbody tr {
     border-bottom: 2px solid #000;
 }
@@ -213,6 +237,7 @@ input[type="color"]:hover {
 .styled-table tbody tr:not(.selected):hover {
     background-color: #f1f1f1;
 }
+
 
 /* Popup Box Styles */
 .popup {
@@ -248,14 +273,6 @@ input[type="color"]:hover {
     height: 100%;
     overflow: auto;
     background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
 }
 
 .close {
@@ -319,3 +336,143 @@ input[type="color"]:hover {
     background-color: #2980b9;
     transform: translateY(-2px);
 }
+
+/* Modal Styles */
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto; /* Lowered for better visibility */
+    padding: 30px;
+    border-radius: 15px; /* Added rounded corners */
+    width: 60%; /* Slightly smaller for a more elegant look */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Added shadow for depth */
+    transition: all 0.3s ease-in-out; /* Smooth transition */
+}
+
+/* Close Button Styles */
+.close {
+    color: #bbb;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: -10px;
+}
+
+.close:hover, .close:focus {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* Add Padding and Style to Inputs and Labels */
+.modal-content label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.modal-content input[type="text"], 
+.modal-content textarea {
+    width: calc(100% - 20px); /* Adjusted for better alignment */
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px; /* Rounded inputs */
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.modal-content input[type="text"]:focus, 
+.modal-content textarea:focus {
+    border-color: #2F71E4;
+    outline: none;
+    box-shadow: 0 2px 8px rgba(47, 113, 228, 0.4);
+}
+
+/* Add Background to Tags and Stickers Containers */
+.modal-content .current-tags, 
+.modal-content .available-tags, 
+.modal-content .row-container {
+    background-color: #f9f9f9;
+    min-height: 49px;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+/* Update the Update Button */
+#editSubmit {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#editSubmit:hover {
+    background-color: #218838;
+}
+
+/* Smooth transitions for all modal elements */
+.modal-content input, .modal-content textarea, .modal-content button {
+    transition: all 0.3s ease;
+}
+
+/* Form Top Section with Fixed Height */
+.form-top-section {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Scrollable Container for the Table */
+.table-container {
+    max-height: 500px; /* Adjust as needed */
+    overflow-y: auto;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure the table spans the entire container width */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0; /* Remove any margin so that it fills the container */
+    display: none; /* Initially hidden */
+}
+
+/* Show the table when data is populated */
+.styled-table.has-data {
+    display: table;
+}
+
+#clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px; /* Adjust size as needed */
+    color: #999; /* X button color */
+    padding: 0;
+    margin: 0;
+}
+
+#clear-btn:focus {
+    outline: none;
+}
+
