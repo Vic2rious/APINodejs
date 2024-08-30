@@ -15,6 +15,7 @@
         <h1>Edit Card Businessmap</h1>
         <form id="boardForm">
             <div class="form-top-section">
+                <button type="button" class="close-btn" onclick="window.location.href='index.html'">&times;</button>
                 <div class="form-group">
                     <label for="board">Board:</label>
                     <select id="board" name="board" required>
@@ -49,11 +50,13 @@
         <div id="popup" class="popup"></div>
     </div>
 
-    <!-- Edit Popup Modal -->
+ <!-- Edit Popup Modal -->
 <div id="editPopup" class="modal">
     <div class="modal-content">
         <span id="editClose" class="close">&times;</span>
         <h2>Edit Card</h2>
+
+        <!-- Existing fields -->
         <label for="getTitle">Title</label>
         <input type="text" id="getTitle">
         <br>
@@ -62,6 +65,20 @@
         <textarea id="getDescription" rows="10"></textarea>
         <br>
 
+        <!-- New Owner and Co-Owner fields -->
+        <label for="owner">Owner</label>
+        <select id="owner" name="owner" required>
+            <option value="0">None</option>
+        </select>
+        <br><br>
+
+        <label for="coOwners">Co-Owners</label>
+        <select id="coOwners" name="coOwners" multiple>
+            <option value="0">None</option>
+        </select>
+        <br><br>
+
+        <!-- Existing tags and stickers fields -->
         <label for="currentTags">Current Tags</label>
         <div id="currentTags" class="current-tags"></div>
         <br>
@@ -82,12 +99,24 @@
     </div>
 </div>
 
+
 <div id="loadingModal" class="loading-modal" style="display: none;">
     <div class="loading-content">
         <img src="images/transparent-zergling.gif" alt="Loading..." />
         <p>Loading...</p>
     </div>
 </div>
+
+<div id="confirmDeleteModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <p>Are you sure you want to delete this card?</p>
+        <div class="button-container">
+            <button id="confirmDeleteButton" class="button delete-button">Yes, Delete</button>
+            <button id="cancelDeleteButton" class="button">Cancel</button>
+        </div>
+    </div>
+</div>
+
 
     
 </body>

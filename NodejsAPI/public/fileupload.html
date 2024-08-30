@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Upload and View</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/FileUpload/csvUpload.js" type="module" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload CSV File</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="form-top-section">
+                <button type="button" class="close-btn" onclick="window.location.href='index.html'">&times;</button>
+                <div class="form-group">
+                    <label for="csvFile" class="file-upload-container">
+                        <input type="file" id="csvFile" name="csvFile" accept=".csv">
+                        <span class="custom-file-upload">Choose CSV File</span>
+                    </label>
+                </div>
+                <div class="button-container">
+                    <button type="submit" class="button">Upload</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="styled-table" id="csv-table">
+                    <thead>
+                        <tr>
+                            <!-- Table headers will be dynamically populated -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        <div id="popup" class="popup"></div>
+
+    </div>
+
+    <div id="loadingModal" class="loading-modal" style="display: none;">
+        <div class="loading-content">
+            <img src="images/transparent-zergling.gif" alt="Loading..." />
+            <p>Loading...</p>
+        </div>
+    </div>
+
+
+
+</body>
+</html>

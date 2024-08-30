@@ -1,5 +1,9 @@
+import { showPopup, showLoading, hideLoading } from "../EditCard/common.js";
+
 document.getElementById("cardForm").addEventListener("submit", async function(event) {
     event.preventDefault();
+    showLoading();
+
 
     const form = event.target;
     const formData = new FormData(form);
@@ -16,6 +20,7 @@ document.getElementById("cardForm").addEventListener("submit", async function(ev
 
             title.value = "";   
             description.value = "";   
+            hideLoading();
         } else {
             showPopup(result.message || "Failed to create card", "error");
         }
@@ -24,14 +29,3 @@ document.getElementById("cardForm").addEventListener("submit", async function(ev
         showPopup("An error occurred while creating the card", "error");
     }
 });
-
-function showPopup(message, type) {
-    const popup = document.getElementById("popup");
-    popup.textContent = message;
-    popup.className = `popup ${type}`;
-    popup.style.display = "block";
-
-    setTimeout(() => {
-        popup.style.display = "none";
-    }, 3000);
-}

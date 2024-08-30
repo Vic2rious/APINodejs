@@ -2,6 +2,7 @@ import { fetchTagsForCard, updateAvailableTagsForBoard, fetchAllTags } from "./t
 import { fetchStickersForCard, updateAvailableStickersForBoard, fetchAllStickers } from "./stickers.js";
 import { showPopup, moveElement, showLoading, hideLoading } from "./common.js";
 import { state } from "./globals.js";
+import { populateOwnerAndCoOwners } from "./owners.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const boardSelect = document.getElementById("board");
@@ -135,7 +136,8 @@ async function fetchCards() {
                 deleteButton.classList.add("small-button", "delete-button");
                 deleteButton.addEventListener("click", event => {
                     event.preventDefault();
-                    deleteCard(card.card_id, row);
+                    // Show the confirmation modal
+                    showDeleteConfirmation(card.card_id, row);
                 });
 
                 // Add buttons next to each other
@@ -155,6 +157,29 @@ async function fetchCards() {
         .catch(error => console.error("Error fetching cards:", error));
 
     hideLoading();
+}
+
+function showDeleteConfirmation(cardId, row) {
+    const confirmDeleteModal = document.getElementById("confirmDeleteModal");
+    const confirmDeleteButton = document.getElementById("confirmDeleteButton");
+    const cancelDeleteButton = document.getElementById("cancelDeleteButton");
+
+    confirmDeleteModal.style.display = "block";
+
+    confirmDeleteButton.onclick = async () => {
+        await deleteCard(cardId, row);
+        confirmDeleteModal.style.display = "none";
+    };
+
+    cancelDeleteButton.onclick = () => {
+        confirmDeleteModal.style.display = "none";
+    };
+
+    window.onclick = (event) => {
+        if (event.target === confirmDeleteModal) {
+            confirmDeleteModal.style.display = "none";
+        }
+    };
 }
 
 async function deleteCard(cardId, row) {
@@ -189,6 +214,8 @@ async function editCard(cardId) {
     const availableTagsContainer = document.getElementById("availableTags");
     const currentStickersContainer = document.getElementById("currentStickers");
     const availableStickersContainer = document.getElementById("availableStickers");
+    const ownerSelect = document.getElementById("owner");
+    const coOwnersSelect = document.getElementById("coOwners");
 
     let card;
 
@@ -204,6 +231,7 @@ async function editCard(cardId) {
             titleText.value = card.title;
         });
 
+            await populateOwnerAndCoOwners(card, ownerSelect, coOwnersSelect);
             //fetch all tags and stickers
             const allTags = await fetchAllTags();
             const allStickers = await fetchAllStickers();
@@ -234,6 +262,8 @@ async function handleEditSubmit() {
     const titleText = document.getElementById("getTitle");
     const currentTagsContainer = document.getElementById("currentTags");
     const currentStickersContainer = document.getElementById("currentStickers");
+    const ownerSelect = document.getElementById("owner");
+    const coOwnersSelect = document.getElementById("coOwners");
 
     const updatedTitle = titleText.value;
     const updatedDescription = descriptionTextbox.value.replace(/\n/g, "<br>");
@@ -246,6 +276,17 @@ async function handleEditSubmit() {
 
     const tagIdsToRemove = state.deletedTagsIds;
     const stickerIdsToRemove = state.deletedStickersIds;
+    const coOwnerIdsToRemove = state.deletedCoOwnerIds;
+
+    const owner = ownerSelect.value;
+    const coOwners = Array.from(coOwnersSelect.options)
+                      .filter(option => option.selected)
+                      .map(option => option.value);
+
+    const FixedOwner = owner === "0" ? null : parseInt(owner);
+    const FixedCoOwners = (Array.isArray(coOwners) ? 
+    coOwners.filter(item => item !== "0").map(item => parseInt(item, 10)) 
+    : coOwners === "0" ? [] : [parseInt(coOwners, 10)]);
 
     await fetch(`/api/cards/${cardId}`, {
         method: "PATCH",
@@ -258,12 +299,16 @@ async function handleEditSubmit() {
             tag_ids_to_add: tagIdsToAdd,
             tag_ids_to_remove: tagIdsToRemove,
             stickers_to_add: stickerIdsToAdd.map(stickerId => ({ sticker_id: stickerId })),
-            sticker_ids_to_remove: stickerIdsToRemove
+            sticker_ids_to_remove: stickerIdsToRemove, 
+            owner_user_id: FixedOwner,
+            co_owner_ids_to_remove: coOwnerIdsToRemove,
+            co_owner_ids_to_add: FixedCoOwners
         })
     })
     .then(() => {
         state.deletedTagsIds = [];
         state.deletedStickersIds = [];
+        state.deletedCoOwnerIds = [];
         showPopup(`Card with ID ${cardId} was updated`, "success");
         // Refresh the card menu
         editPopup.style.display = "none";

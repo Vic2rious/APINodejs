@@ -13,6 +13,7 @@
     <!-- GET Method Form -->
     <form id="cardForm">
         <div class="form-container">
+            <button type="button" class="close-btn" onclick="window.location.href='index.html'">&times;</button>
             <div class="form-section">
                 <h2>Card Location</h2>
 
@@ -55,12 +56,25 @@
             <div class="form-section">
                 <h2>Card Properties</h2>
 
+                <!-- New Owner Dropdown -->
+                <label for="owner">Owner:</label>
+                <select id="owner" name="Owner" required>
+                    <option value="">Select owner...</option>
+                </select>
+                <br><br>
+                
+                <label for="coOwners">Co-Owners:</label>
+                <select id="coOwners" name="CoOwners" multiple>
+                    <option value="">Select co-owners...</option>
+                </select>
+                <br><br>
+
                 <label for="getTitle">Title:</label>
                 <input type="text" id="getTitle" name="Title" required>
                 <br><br>
 
                 <label for="getDescription">Description:</label>
-                <textarea id="getDescription" name="Description"></textarea>
+                <textarea id="getDescription" name="Description" rows="10"></textarea>
                 <br><br>
 
                 <label for="getColour">Colour:</label>
@@ -82,6 +96,7 @@
     <script src="js/CreateCard/workflowAccess.js"></script>
     <script src="/js/CreateCard/columnAccess.js"></script>
     <script src="/js/CreateCard/swimlaneAccess.js"></script>
-    <script src="/js/CreateCard/cardSubmit.js"></script>
+    <script src="/js/CreateCard/cardSubmit.js" type="module"></script>
+    <script src="/js/CreateCard/ownerAccess.js"></script>
 </body>
 </html>

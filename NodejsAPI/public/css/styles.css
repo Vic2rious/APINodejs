@@ -79,7 +79,7 @@ input[type="text"]::placeholder, textarea::placeholder {
 
 /* Specific Input Styles */
 textarea {
-    height: 35.5%;
+    height: 20%;
     resize: none;
 }
 
@@ -217,7 +217,7 @@ input[type="color"]:hover {
 
 .styled-table th:last-child, /* Actions column */
 .styled-table td:last-child {
-    width: 10%; /* Adjust as needed */
+    width: 20%; /* Adjust as needed */
 }
 
 /* Let the "Title" column take the remaining space */
@@ -476,3 +476,56 @@ input[type="color"]:hover {
     outline: none;
 }
 
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 48px;
+    color: #414040;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.small-modal {
+    max-width: 500px;
+}
+
+/* Hide the default file input */
+input[type="file"] {
+    display: none;
+}
+
+/* Style for the custom file upload button */
+.file-upload-container {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-file-upload {
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: #007bff;
+    cursor: pointer;
+    background-color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.edit-textbox {
+    max-width: 80px; /* Adjust the width as needed */
+    padding: 5px;
+    font-size: 14px;
+}

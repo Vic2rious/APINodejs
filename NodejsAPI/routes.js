@@ -10,6 +10,10 @@ const createEndpoint = (method, url, axiosConfig) => {
         const params = req.params;
         const query = req.query;
         const data = req.body;
+        //console.log(params);
+        //console.log(query);
+        //console.log(data);
+
 
         try {
             const axiosOptions = {
@@ -96,7 +100,20 @@ createEndpoint("patch", "/api/cards/:cardId", {
         tag_ids_to_add: data.tag_ids_to_add,
         tag_ids_to_remove: data.tag_ids_to_remove,
         stickers_to_add: data.stickers_to_add,
-        sticker_ids_to_remove: data.sticker_ids_to_remove
+        sticker_ids_to_remove: data.sticker_ids_to_remove,
+        owner_user_id: data.owner_user_id,
+        co_owner_ids_to_remove: data.co_owner_ids_to_remove,
+        co_owner_ids_to_add: data.co_owner_ids_to_add,
+        custom_id: data.custom_id
+    })
+});
+
+// Add a POST endpoint for updating multiple cards
+createEndpoint("post", "/api/cards/updateMany", {
+    method: "post",
+    url: "https://testfrog.kanbanize.com/api/v2/cards/updateMany",
+    data: (data) => ({
+        cards: data.cards
     })
 });
 
@@ -151,5 +168,18 @@ createEndpoint("get", "/api/cards/:cardId/stickers", {
     method: "get",
     url: params => `https://testfrog.kanbanize.com/api/v2/cards/${params.cardId}/stickers`
 });
+
+// Add the GET endpoint for fetching users with expanded board roles
+createEndpoint("get", "/api/users", {
+    method: "get",
+    url: "https://testfrog.kanbanize.com/api/v2/users?expand=board_roles"
+});
+
+// Add the GET endpoint for fetching all cards
+createEndpoint("get", "/api/cards", {
+    method: "get",
+    url: "https://testfrog.kanbanize.com/api/v2/cards"
+});
+
 
 export default router;

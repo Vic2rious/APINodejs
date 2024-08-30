@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 
 // Import the routes
 import routes from "./routes.js"; // Update the path as needed
+import uploadRoutes from "./upload.js"; // New upload routes
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,8 +36,8 @@ app.get("/", (req, res) => {
 });
 
 // Route for the card create page
-app.get("/cardcreate", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "cardcreate.html"));
+app.get("/fileupload", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "fileupload.html"));
 });
 
 // Route for the view cards page
@@ -47,18 +48,27 @@ app.get("/cards", (req, res) => {
 // Use the routes defined in routes.js
 app.use(routes);
 
+// Use the routes defined in upload.js
+app.use(uploadRoutes);
+
 app.get("/post", (req, res) => {
-    const { Workflow, Column, Swimlane, Title, Description, Colour } = req.query;
+    const { Workflow, Column, Swimlane, Title, Description, Colour, Owner, CoOwners } = req.query;
 
     const FixedDescription = Description.replace(/\n/g,"<br>");
     const FixedColour = Colour.replace("#","");
+    const FixedOwner = Owner === "0" ? null : Owner;
+    const FixedCoOwners = (Array.isArray(CoOwners) ? 
+    CoOwners.filter(item => item !== "0").map(item => parseInt(item, 10)) 
+    : CoOwners === "0" ? [] : [parseInt(CoOwners, 10)]);
     const postData = {
         "title": Title,
+        "owner_user_id": FixedOwner,
         "description": FixedDescription,
         "workflow_id": parseInt(Workflow, 10),
         "column_id": parseInt(Column, 10),
         "lane_id": parseInt(Swimlane, 10),
         "color": FixedColour,
+        "co_owner_ids_to_add" : FixedCoOwners,
         "position": 0
     };
 
