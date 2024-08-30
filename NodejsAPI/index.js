@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 5500;
-const apiKeyValue = "blBKknnfhRx5nPghmv5orznIT9pwulvUGZmPDpiv";
+const apiKeyValue = "Insert API Key Here";
 
 // Middleware to parse URL-encoded bodies (for POST requests)
 app.use(bodyParser.urlencoded({ extended: true }));
