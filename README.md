@@ -2,4 +2,4 @@
 Testing NodeJs with an API
 
 
-[Watch the video](APITestingServiceLowQuality.mp4)
+[Go to video](APITestingServiceLowQuality.mp4)
